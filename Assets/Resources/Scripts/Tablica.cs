@@ -10,8 +10,14 @@ public class Tablica : MonoBehaviour
     public int szerokoscSiatki;
     //dzieki temu mozemy ustawic w unity jaki typ obiektu moze nam stworzyc tablice (w tym wypadku blok o nazwie cukierek)
     public GameObject obiekt;
-
-
+    public Cukierek ostatniCukierek;
+    //cukierek 1 start/koniec
+    public Vector3 c1s, c1k, c2s, c2k;
+    public bool zamiana = false;
+    public Cukierek cuks1, cuks2;
+    public float czasStartu;
+    //Do zmiany nazwa
+    public float SwapRate=2;
     // Use this for initialization
 
     //tworzenie tablicy dwuwymiarowej
@@ -31,12 +37,92 @@ public class Tablica : MonoBehaviour
             }
         }
         //ustawienie tablicy dla kamery
-        gameObject.transform.position = new Vector3(-2.5f, -1.5f, 0);
+        gameObject.transform.position = new Vector3(-2.5f, 0f, 0);
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-	
+	    if (zamiana)
+        {
+            RuchCuksa(cuks1, c1k, c1s);
+            OdwrotnyRuchCuksa(cuks2, c2k, c2s);
+            if (Vector3.Distance(cuks1.transform.position, c1k)<.1f|| Vector3.Distance(cuks2.transform.position, c2k) < .1f)
+            {
+                cuks1.transform.position = c1k;
+                cuks2.transform.position = c2k;
+                zamiana = false;
+                WlacznikFizyki(false);
+            }
+        }
 	}
+    public void RuchCuksa(Cukierek aktualnyDoZmiany, Vector3 doPoz, Vector3 zPoz)
+    {
+        
+        Vector3 srodek = (doPoz + zPoz)*5f;
+        srodek = new Vector3(0,0, .1f);
+        //Do zmiany nazwy
+        Vector3 nowyPrawSrodek = zPoz - srodek;
+        Vector3 ustawionyPrawSrodek= doPoz - srodek;
+        float fracComplete = (Time.time - czasStartu)/SwapRate;
+        aktualnyDoZmiany.transform.position = Vector3.Slerp(nowyPrawSrodek, ustawionyPrawSrodek, fracComplete);
+        aktualnyDoZmiany.transform.position += srodek;
+    }
+    public void OdwrotnyRuchCuksa(Cukierek aktualnyDoZmiany, Vector3 doPoz, Vector3 zPoz)
+    {
+        
+        Vector3 srodek = (doPoz + zPoz) * 5f;
+        srodek = new Vector3(0, 0, .1f);
+        //Do zmiany nazwy
+        Vector3 nowyPrawSrodek = zPoz - srodek;
+        Vector3 ustawionyPrawSrodek = doPoz - srodek;
+        float fracComplete = (Time.time - czasStartu)/SwapRate;
+        aktualnyDoZmiany.transform.position = Vector3.Slerp(nowyPrawSrodek, ustawionyPrawSrodek, fracComplete);
+        aktualnyDoZmiany.transform.position += srodek;
+    }
+    public void WlacznikFizyki(bool isOn)
+    {
+        for(int i = 0; i<cukierki.Count; i++)
+        {
+            cukierki[i].GetComponent<Rigidbody>().isKinematic = isOn;
+
+        }
+    }
+
+    public void ZamianaCuksow(Cukierek aktualnyCuks)
+    {
+        if (ostatniCukierek == null)
+        {
+            ostatniCukierek = aktualnyCuks;
+        }
+        else if (ostatniCukierek == aktualnyCuks)
+        {
+            ostatniCukierek = null;
+        }
+        else
+        {
+            if (ostatniCukierek.JestWSasiedztwie(aktualnyCuks))
+            {
+                c1s = ostatniCukierek.transform.position;
+                c1k = aktualnyCuks.transform.position;
+
+                c2s = aktualnyCuks.transform.position;
+                c2k = ostatniCukierek.transform.position;
+
+                czasStartu = Time.time;
+                WlacznikFizyki(true);
+                cuks1 = ostatniCukierek;
+                cuks2 = aktualnyCuks;
+                zamiana = true;
+                
+            }
+            else
+            {
+                ostatniCukierek = aktualnyCuks;
+            }
+            //to opcjonalnie
+            aktualnyCuks = null;
+            ostatniCukierek = null;
+        }
+    }
 }

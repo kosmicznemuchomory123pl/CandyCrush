@@ -9,6 +9,11 @@ public class Cukierek : MonoBehaviour
     string kolor = "";
     public GameObject cube;
     public List<Cukierek> Sasiedztwo = new List<Cukierek>();
+
+    
+
+
+
     // Use this for initialization
     void Start()
     {
@@ -39,6 +44,15 @@ public class Cukierek : MonoBehaviour
             Sasiedztwo.Add(c);
         }
     }
+    public bool JestWSasiedztwie (Cukierek c)
+    {
+        if(Sasiedztwo.Contains(c))
+        {
+            return true;
+
+        }
+        return false;
+    }
     public void UsuniecieSasiedztwa(Cukierek c)
     {
         Sasiedztwo.Remove(c);
@@ -46,12 +60,6 @@ public class Cukierek : MonoBehaviour
     //funkcja wywoływana gdy klikniemy na obiekt
     void OnMouseDown()
     {
-        GameObject c1;
-        GameObject c2;
-        c1 = this.gameObject;
-        c2 = this.gameObject;
-
-        c1 = c2;
-
+        GameObject.Find("Tablica").GetComponent<Tablica>().ZamianaCuksow(this);
     }
 }
