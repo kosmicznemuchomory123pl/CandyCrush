@@ -15,9 +15,9 @@ public class Tablica : MonoBehaviour
     public Vector3 c1s, c1k, c2s, c2k;
     public bool zamiana = false;
     public Cukierek cuks1, cuks2;
-    public float czasStartu;
+    //public float czasStartu;
     //Do zmiany nazwa
-    public float SwapRate=2;
+    //public float SwapRate=2;
     // Use this for initialization
 
     //tworzenie tablicy dwuwymiarowej
@@ -58,27 +58,15 @@ public class Tablica : MonoBehaviour
 	}
     public void RuchCuksa(Cukierek aktualnyDoZmiany, Vector3 doPoz, Vector3 zPoz)
     {
-        
-        Vector3 srodek = (doPoz + zPoz)*5f;
-        srodek = new Vector3(0,0, .1f);
-        //Do zmiany nazwy
-        Vector3 nowyPrawSrodek = zPoz - srodek;
-        Vector3 ustawionyPrawSrodek= doPoz - srodek;
-        float fracComplete = (Time.time - czasStartu)/SwapRate;
-        aktualnyDoZmiany.transform.position = Vector3.Slerp(nowyPrawSrodek, ustawionyPrawSrodek, fracComplete);
-        aktualnyDoZmiany.transform.position += srodek;
+        //szybkosc zamiany klockow
+        aktualnyDoZmiany.transform.position = Vector3.Slerp(zPoz, doPoz, 1);
+        //aktualnyDoZmiany.transform.position += srodek;
     }
     public void OdwrotnyRuchCuksa(Cukierek aktualnyDoZmiany, Vector3 doPoz, Vector3 zPoz)
     {
-        
-        Vector3 srodek = (doPoz + zPoz) * 5f;
-        srodek = new Vector3(0, 0, .1f);
-        //Do zmiany nazwy
-        Vector3 nowyPrawSrodek = zPoz - srodek;
-        Vector3 ustawionyPrawSrodek = doPoz - srodek;
-        float fracComplete = (Time.time - czasStartu)/SwapRate;
-        aktualnyDoZmiany.transform.position = Vector3.Slerp(nowyPrawSrodek, ustawionyPrawSrodek, fracComplete);
-        aktualnyDoZmiany.transform.position += srodek;
+        //szybkosc zamiany klockow
+        aktualnyDoZmiany.transform.position = Vector3.Slerp(zPoz, doPoz, 1);
+        //aktualnyDoZmiany.transform.position += srodek;
     }
     public void WlacznikFizyki(bool isOn)
     {
@@ -109,7 +97,7 @@ public class Tablica : MonoBehaviour
                 c2s = aktualnyCuks.transform.position;
                 c2k = ostatniCukierek.transform.position;
 
-                czasStartu = Time.time;
+                //czasStartu = Time.time;
                 WlacznikFizyki(true);
                 cuks1 = ostatniCukierek;
                 cuks2 = aktualnyCuks;
@@ -124,5 +112,32 @@ public class Tablica : MonoBehaviour
             aktualnyCuks = null;
             ostatniCukierek = null;
         }
+    }
+    public void rekurencja(Vector3 wektor3,Cukierek tenCuks, Cukierek wybrany)
+    {
+
+
+
+        
+        tenCuks.transform.position = wektor3;
+        if (tenCuks.cube != wybrany.cube )
+        {
+            return;
+        }
+        tenCuks.cube.tag = "zniszcz";
+
+        
+        
+        wektor3.x = +1;
+        rekurencja(wektor3, tenCuks, wybrany);
+        wektor3.x = -1;
+        rekurencja(wektor3, tenCuks, wybrany);
+        wektor3.y = +1;
+        rekurencja(wektor3, tenCuks, wybrany);
+        wektor3.y = -1;
+        rekurencja(wektor3, tenCuks, wybrany);
+        return;
+
+        
     }
 }

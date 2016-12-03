@@ -60,6 +60,7 @@ public class Cukierek : MonoBehaviour
     //funkcja wywoływana gdy klikniemy na obiekt
     void OnMouseDown()
     {
-        GameObject.Find("Tablica").GetComponent<Tablica>().ZamianaCuksow(this);
+        GameObject.Find("Tablica").GetComponent<Tablica>().rekurencja(this, this);
+        
     }
 }
